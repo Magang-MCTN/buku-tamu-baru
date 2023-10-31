@@ -22,6 +22,8 @@ Route::get('/', function () {
 // Route::get('/pengajuan-tamu', [TamuController::class, 'createForm'])->name('tamu.create');
 Route::post('/pengajuan-tamu', [TamuController::class, 'store'])->name('tamu.store');
 Route::get('/pengajuan-tamu/create', [TamuController::class, 'create'])->name('tamu.create');
+Route::get('/pengajuan-tamu2', [TamuController::class, 'surat2'])->name('tamu.surat2');
+Route::post('/pengajuan-tamu2', [TamuController::class, 'surat2'])->name('simpan.data.tamu');
 
 
 //auth
@@ -44,6 +46,12 @@ Route::middleware(['auth', 'role:3'])->group(function () {
     // Rute yang akan dilindungi oleh middleware role "tuan"
     Route::get('/tuanrumah', [TuanRumahController::class, 'index'])->name('tuanrumah.home');
     Route::get('/persetujuan', [TuanRumahController::class, 'persetujuan'])->name('tuanrumah.persetujuan');
+    Route::get('/tuanrumah/show/{id}', [TuanRumahController::class, 'show'])->name('tuanrumah.show');
+    Route::post('/tuanrumah/delete/{id}', [TuanRumahController::class, 'delete'])->name('tuanrumah.delete');
+    Route::post('/tuanrumah/approve/{id}', [TuanRumahController::class, 'approve'])->name('tuanrumah.approve');
+    Route::post('/tuanrumah/reject/{id}', [TuanRumahController::class, 'reject'])->name('tuanrumah.reject');
+
+    Route::get('/test', [TuanRumahController::class, 'test'])->name('test');
 });
 Route::middleware(['auth', 'role:4'])->group(function () {
     // Rute yang akan dilindungi oleh middleware role "phr"

@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Surat1BukuTamu extends Model
 {
+    use HasFactory, Notifiable;
     protected $table = 'surat_1_buku_tamu';
 
     protected $primaryKey = 'id_surat_1';

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="dashboard/template/vendors/typicons/typicons.css">
     <link rel="stylesheet" href="dashboard/template/vendors/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="dashboard/template/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="dashboard/template/vendors/google-sign-in/google-sign-in.css">
     <!-- endinject -->
     <!-- Plugin css for this page -->
     <!-- End plugin css for this page -->
