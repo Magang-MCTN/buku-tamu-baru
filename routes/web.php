@@ -23,7 +23,9 @@ Route::get('/', function () {
 Route::post('/pengajuan-tamu', [TamuController::class, 'store'])->name('tamu.store');
 Route::get('/pengajuan-tamu/create', [TamuController::class, 'create'])->name('tamu.create');
 Route::get('/pengajuan-tamu2', [TamuController::class, 'surat2'])->name('tamu.surat2');
-Route::post('/pengajuan-tamu2', [TamuController::class, 'surat2'])->name('simpan.data.tamu');
+Route::post('/datatamu', [TamuController::class, 'datatamu'])->name('datatamu.store');
+Route::post('/simpanTamu', [TamuController::class, 'simpanTamu'])->name('simpanTamu');
+
 
 
 //auth

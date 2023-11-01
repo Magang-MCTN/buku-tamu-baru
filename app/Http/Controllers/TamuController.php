@@ -127,7 +127,53 @@ class TamuController extends Controller
         ]);
 
         $tamu->save();
+        return redirect()->route('/');
     }
+
+    public function simpanTamu(Request $request)
+    {
+        // Ambil data tamu dari permintaan
+        $request->validate([
+            'dataTamu' => 'required|array',
+            'dataTamu.*.nama_tamu' => 'required|string',
+            'dataTamu.*.nik_tamu' => 'required|string',
+            'dataTamu.*.masa_berlaku_ktp' => 'required|string',
+            'dataTamu.*.jabatan' => 'required|string',
+            'dataTamu.*.foto_ktp' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $dataTersimpan = 0;
+
+        foreach ($request->input('dataTamu', []) as $key => $tamuData) {
+            $file = $request->file("dataTamu.$key.foto_ktp");
+            $namaFotoKtp = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $namaFotoKtp);
+
+            $tamuBaru = new DataDiriBukuTamu([
+                'nama_tamu' => $tamuData['nama_tamu'],
+                'nik_tamu' => $tamuData['nik_tamu'],
+                'masa_berlaku_ktp' => $tamuData['masa_berlaku_ktp'],
+                'jabatan' => $tamuData['jabatan'],
+                'foto_ktp' => $namaFotoKtp,
+            ]);
+
+            // Simpan data tamu ke dalam database
+            if ($tamuBaru->save()) {
+                $dataTersimpan++;
+            }
+        }
+
+        $pesan = $dataTersimpan > 0 ? 'Data tamu berhasil disimpan.' : 'Tidak ada data tamu yang disimpan.';
+        return response()->json(['message' => $pesan]);
+    }
+
+    // } else {
+    //     // Handle kasus di mana $dataTamu kosong atau tidak valid
+    //     return response()->json(['error' => 'Data tamu tidak valid.']);
+    // }
+
+
+
 
 
     public function upsurat2(Request $request, $id)
