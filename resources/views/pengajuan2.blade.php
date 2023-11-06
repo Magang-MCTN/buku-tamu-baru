@@ -1,13 +1,15 @@
-@extends('dashboard/app')
+@extends('layouts/app')
 
 @section('content')
 <div class="container">
     <h2>Formulir Data Diri Tamu</h2>
-
+<p> ID SURAT ANDA ADALAH {{ $surat1_id }} </p>
     <!-- Formulir Data Diri -->
     <form id="form-datadiri">
         @csrf
         <!-- Input Form -->
+        <label for="id_surat_1">ID SURAT:</label>
+        <input type="text" name="id_surat_1" id="id_surat_1" required value="{{ $surat1_id }}" disabled>
         <label for="nama_tamu">Nama:</label>
         <input type="text" name="nama_tamu" id="nama_tamu" required>
 
@@ -30,6 +32,7 @@
     <table>
         <thead>
             <tr>
+                <th>ID surat 1</th>
                 <th>Nama</th>
                 <th>Nomor KTP</th>
                 <th>Masa Berlaku KTP</th>
@@ -61,6 +64,7 @@
             let nik_tamu = $('#nik_tamu').val();
             let masa_berlaku_ktp = $('#masa_berlaku_ktp').val();
             let jabatan = $('#jabatan').val();
+            let id_surat_1 = $('#id_surat_1').val();
             let foto_ktp = $('#foto_ktp')[0].files[0]; // Foto KTP
 
             // Tambahkan data ke array
@@ -69,11 +73,13 @@
                 nik_tamu,
                 masa_berlaku_ktp,
                 jabatan,
-                foto_ktp
+                foto_ktp,
+                id_surat_1
             });
 
             // Tambahkan data tamu ke tabel sementara
             let newRow = `<tr>
+                <td>${id_surat_1}</td>
                 <td>${nama_tamu}</td>
                 <td>${nik_tamu}</td>
                 <td>${masa_berlaku_ktp}</td>
@@ -102,13 +108,14 @@
                 let formData = new FormData();
                 formData.append('_token', $('input[name="_token"]').val());
 
-                // Tambahkan data dan file ke FormData
+                // Tambahkan data dan file ke FormData{{ $surat1_id }}
                 $.each(dataTamu, function (key, value) {
                     formData.append(`dataTamu[${key}][nama_tamu]`, value.nama_tamu);
                     formData.append(`dataTamu[${key}][nik_tamu]`, value.nik_tamu);
                     formData.append(`dataTamu[${key}][masa_berlaku_ktp]`, value.masa_berlaku_ktp);
                     formData.append(`dataTamu[${key}][jabatan]`, value.jabatan);
                     formData.append(`dataTamu[${key}][foto_ktp]`, value.foto_ktp);
+                    formData.append(`dataTamu[${key}][id_surat_1]`, value.id_surat_1 );
                 });
 
                 // Kirim data ke server menggunakan AJAX
@@ -123,6 +130,8 @@
                         dataTamu = [];
                         $('#tabelSementara').empty();
                         alert('Data tamu berhasil disimpan ke database.');
+
+                        window.location.href = "/pilih-kendaraan?surat1_id=" + {{ $surat1_id }};
                     },
                     error: function (xhr, status, error) {
                         alert('Terjadi kesalahan saat menyimpan data.');

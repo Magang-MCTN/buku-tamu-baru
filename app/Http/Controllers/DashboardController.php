@@ -12,13 +12,33 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $surat1 = Surat1BukuTamu::all();
-        $lokasi = LokasiTujuan::all();
-        $periode = PeriodeTamu::all();
-        $status = StatusSurat::all();
+        $userRole = auth()->user()->id_role;
 
-
-
-        return view('dashboard.home', compact('surat1', 'lokasi', 'periode', 'status'));
+        switch ($userRole) {
+            case 1:
+                return redirect()->route('admin.dashboard');
+                break;
+            case 2:
+                return redirect()->route('admin.jkt.dashboard');
+                break;
+            case 3:
+                return redirect()->route('tuanrumah.home');
+                break;
+            case 4:
+                return redirect()->route('phr.home');
+                break;
+            case 5:
+                return redirect()->route('admin_duri.dashboard');
+                break;
+            case 6:
+                return redirect()->route('tuan.dashboard');
+                break;
+            case 7:
+                return redirect()->route('tuan.dashboard');
+                break;
+                // Tambahkan case lain sesuai dengan peran pengguna lainnya
+            default:
+                return redirect()->route('default.dashboard');
+        }
     }
 }

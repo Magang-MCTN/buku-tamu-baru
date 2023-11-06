@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\aprovedpic;
 use App\Mail\Send;
 use App\Models\LokasiTujuan;
 use App\Models\PeriodeTamu;
@@ -16,7 +17,10 @@ class TuanRumahController extends Controller
 {
     public function index()
     {
+        $emailTuanRumah = auth()->user()->email;
+
         $surat1 = Surat1BukuTamu::with(['lokasi', 'periode', 'statusSurat'])
+            ->where('email_tamu', $emailTuanRumah)
             ->select('id_surat_1', 'id_lokasi', 'id_periode', 'id_status_surat', 'nama_tamu', 'asal_perusahaan', 'email_tamu', 'no_hp_tamu', 'tujuan_keperluan')
             ->get();
 
@@ -74,7 +78,7 @@ class TuanRumahController extends Controller
         $surat1_id = $id;
         // Kirim notifikasi ke alamat email tamu
 
-        Mail::to($emailTamu)->send(new Send($surat1_id));
+        Mail::to($emailTamu)->send(new aprovedpic($surat1_id));
 
         // Redirect ke halaman sebelumnya atau ke halaman lain
         return redirect()->back()->with('success', 'Surat 1 telah disetujui');

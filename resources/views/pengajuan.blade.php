@@ -50,9 +50,11 @@
                                         <label for="nama_lokasi" class="form-label">Lokasi yang ingin dikunjungi:</label>
                                         <select id="nama_lokasi" class="form-select form-control" name="nama_lokasi" required>
                                             <option value="" selected disabled> Lokasi </option>
-                                            @foreach($lokasiOptions as $lokasiOption)
-                                                <option value="{{ $lokasiOption->id }}">{{ $lokasiOption->nama_lokasi }}</option>
-                                            @endforeach
+
+                                                <option value="1">Jakarta</option>
+                                                <option value="2">Pekan Baru</option>
+                                                <option value="3">Duri</option>
+
                                         </select>
                                     </div>
                                     <div class="col form-group">

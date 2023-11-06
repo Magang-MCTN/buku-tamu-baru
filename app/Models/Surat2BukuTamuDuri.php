@@ -22,6 +22,7 @@ class Surat2BukuTamuDuri extends Model
         'id_lokasi',
         'id_periode',
         'kode_unik',
+        'alasan_sura2'
     ];
 
     // Definisi relasi dengan Surat1BukuTamu
@@ -37,10 +38,10 @@ class Surat2BukuTamuDuri extends Model
     }
 
     // Definisi relasi dengan DataDiriBukuTamu
-    public function tamu()
-    {
-        return $this->belongsTo(DataDiriBukuTamu::class, 'id_tamu', 'id_tamu');
-    }
+    // public function tamu()
+    // {
+    //     return $this->belongsTo(DataDiriBukuTamu::class, 'id_tamu', 'id_tamu');
+    // }
 
     // Definisi relasi dengan User (PHR)
     public function phr()
@@ -70,5 +71,10 @@ class Surat2BukuTamuDuri extends Model
     public function periodeTamu()
     {
         return $this->belongsTo(PeriodeTamu::class, 'id_periode', 'id_periode');
+    }
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'id_surat_1', 'id_surat_1');
     }
 }

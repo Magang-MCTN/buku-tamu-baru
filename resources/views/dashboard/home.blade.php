@@ -113,7 +113,7 @@
                                     <td>{{ $data->asal_perusahaan }}</td>
                                     <td>{{ $data->periode->tanggal_masuk->format('d-m-Y') }} - {{ $data->periode->tanggal_keluar->format('d-m-Y') }}</td>
                                     <td>{{ $data->statusSurat->nama_status_surat }}</td>
-                                    <td><a href="#" class="btn btn-info">Lihat</a>
+                                    <td><a href="{{ route('tuanrumah.show', $data->id_surat_1) }}" class="btn btn-info">Lihat</a>
                                 </tr>
                             @endforeach
                         </tbody>

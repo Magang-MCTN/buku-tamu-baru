@@ -56,7 +56,8 @@
         </form>
     </div>
 </div>
-<a href="#" class="btn btn-primary my-4">Kembali</a>
+<a href="javascript:history.back()" class="btn btn-primary my-4">Kembali</a>
+
 <!-- Tampilkan tombol setuju dan tolak jika status pengajuan adalah diajukan -->
 </div>
 <script>

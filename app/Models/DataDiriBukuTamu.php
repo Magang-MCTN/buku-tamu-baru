@@ -17,6 +17,7 @@ class DataDiriBukuTamu extends Model
         'masa_berlaku_ktp',
         'jabatan',
         'foto_ktp',
+        'id_surat_1',
     ];
 
     // Definisi relasi dengan Surat1BukuTamu jika diperlukan

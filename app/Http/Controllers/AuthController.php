@@ -46,7 +46,7 @@ class AuthController extends Controller
             'password' => Hash::make($request['password']),
             'id_role' => 3,
         ]);
-        return redirect('login')->with('success', 'Buku berhasil ditambahkan.');
+        return redirect('login')->with('success', 'user');
     }
 
     public function showLoginForm()
@@ -64,7 +64,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (auth()->attempt($credentials)) {
-            return redirect('/');
+            return redirect('/mctn');
         }
 
         return redirect()->back()->withInput($request->only('email'))->withErrors([
@@ -74,7 +74,7 @@ class AuthController extends Controller
     //tambahkan script di bawah ini
     public function redirectToProvider()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')->redirect('/mctn');
     }
 
 
@@ -91,7 +91,7 @@ class AuthController extends Controller
 
             if ($user != null) {
                 auth()->login($user, true);
-                return redirect()->route('dashboard');
+                return redirect('/mctn');
             } else {
                 $create = User::Create([
                     'email'             => $user_google->getEmail(),
@@ -103,7 +103,7 @@ class AuthController extends Controller
 
 
                 auth()->login($create, true);
-                return redirect()->route('dashboard');
+                return redirect('/mctn');
             }
         } catch (Exception $e) {
             return redirect()->route('login');

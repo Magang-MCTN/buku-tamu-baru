@@ -8,10 +8,13 @@ use App\Models\KendaraanBukuTamu;
 use App\Models\LokasiTujuan;
 use App\Models\Mobil;
 use App\Models\PeriodeTamu;
+use App\Models\StatusSurat;
 use App\Models\Surat1BukuTamu;
 use App\Models\Surat2BukuTamu;
+use App\Models\Surat2BukuTamuDuri;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class TamuController extends Controller
@@ -33,13 +36,12 @@ class TamuController extends Controller
             'nama_pic' => 'required',
             'email_pic' => 'required',
             'tujuan_keperluan' => 'required',
+            'nama_lokasi' => 'required',
             // Tambahkan validasi dan kolom lain sesuai kebutuhan
         ]);
 
         // Simpan data ke tabel "lokasi_tujuan" jika belum ada
-        // $lokasi = new LokasiTujuan(['nama_lokasi' => $request->id]);
 
-        $id_lokasi = $request->lokasi;
         // Simpan data ke tabel "periode_tamu" untuk tanggal masuk dan keluar
         // $periode = new PeriodeTamu([
         //     'tanggal_masuk' => $request->tanggal_masuk,
@@ -68,7 +70,7 @@ class TamuController extends Controller
 
         // Kemudian, setel ID periode pada objek Surat1BukuTamu
         $surat1 = new Surat1BukuTamu([
-            'id_lokasi' => 1, // ID lokasi yang sesuai
+            'id_lokasi' => $request->nama_lokasi, // ID lokasi yang sesuai
             'id_periode' => $id_periode, // ID periode yang sesuai
             'id_status_surat' => 1,
             'nama_pic' => $request->nama_pic,
@@ -82,13 +84,14 @@ class TamuController extends Controller
         ]);
         $surat1->save();
         $emailTamu = $surat1->email_pic;
+        $idsurat1 = $surat1->id_surat_1;
 
         // Kirim notifikasi ke alamat email tamu
-        Mail::to($emailTamu)->send(new Send($surat1));
+        Mail::to($emailTamu)->send(new Send($idsurat1));
 
 
 
-
+        return view('terimakasih');
 
 
         // Redirect atau berikan pesan sukses
@@ -140,6 +143,7 @@ class TamuController extends Controller
             'dataTamu.*.masa_berlaku_ktp' => 'required|string',
             'dataTamu.*.jabatan' => 'required|string',
             'dataTamu.*.foto_ktp' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'dataTamu.*.id_surat_1' =>  'required|string',
         ]);
 
         $dataTersimpan = 0;
@@ -155,6 +159,7 @@ class TamuController extends Controller
                 'masa_berlaku_ktp' => $tamuData['masa_berlaku_ktp'],
                 'jabatan' => $tamuData['jabatan'],
                 'foto_ktp' => $namaFotoKtp,
+                'id_surat_1' => $tamuData['id_surat_1'],
             ]);
 
             // Simpan data tamu ke dalam database
@@ -163,16 +168,166 @@ class TamuController extends Controller
             }
         }
 
-        $pesan = $dataTersimpan > 0 ? 'Data tamu berhasil disimpan.' : 'Tidak ada data tamu yang disimpan.';
-        return response()->json(['message' => $pesan]);
+
+        return redirect()->route('pilih.kendaraan');
     }
+
+    public function pilihKendaraan(Request $request)
+    {
+        $surat1_id = $request->input('surat1_id');
+
+        return view('pilih-kendaraan', compact('surat1_id'));
+    }
+    public function pengawalan(Request $request)
+    {
+        $surat1_id = $request->input('surat1_id');
+        $pengawalan = $request->input('pengawalan');
+
+        try {
+            $surat1 = Surat1BukuTamu::find($surat1_id);
+
+            if ($surat1) {
+                $surat1->update(['pengawalan' => $pengawalan]);
+                // Atau Anda dapat menggunakan $surat1->pengawalan = $pengawalan; $surat1->save();
+            } else {
+                // Lakukan penanganan kesalahan jika $surat1 tidak ditemukan
+            }
+
+            return redirect()->route('surat1.show', ['id' => $surat1_id])
+                ->with('success', 'Pengawalan berhasil disimpan.');
+        } catch (\Exception $e) {
+            // Tangani kesalahan jika terjadi eksepsi (exception)
+            return redirect()->route('surat1.show', ['id' => $surat1_id])
+                ->with('error', 'Terjadi kesalahan saat menyimpan pengawalan.');
+        }
+    }
+    public function kendaraan(Request $request)
+    {
+        $surat1_id = $request->input('surat1_id');
+        return view('kendaraan', compact('surat1_id'));
+    }
+
 
     // } else {
     //     // Handle kasus di mana $dataTamu kosong atau tidak valid
     //     return response()->json(['error' => 'Data tamu tidak valid.']);
     // }
 
+    public function simpanKendaraan(Request $request)
+    {
+        $request->validate([
+            'datakendaraan' => 'required|array',
+            'datakendaraan.*.id_surat_1' => 'required|integer',
+            'datakendaraan.*.tipe_mobil' => 'required|string',
+            'datakendaraan.*.warna' => 'required|string',
+            'datakendaraan.*.nomor_polisi' => 'required|string',
+            'datakendaraan.*.nama_supir' => 'required|string',
+            'datakendaraan.*.masa_berlaku_stnk' => 'required|string',
+            'datakendaraan.*.masa_berlaku_kir' => 'required|string',
+            'datakendaraan.*.masa_berlaku_sim' => 'required|string',
+            'datakendaraan.*.foto_kendaraan' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'datakendaraan.*.foto_stnk' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'datakendaraan.*.foto_sim' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
+        $dataTersimpan = 0;
+
+        foreach ($request->input('datakendaraan', []) as $key => $kendaraanData) {
+            $fileKendaraan = $request->file("datakendaraan.$key.foto_kendaraan");
+            $fileStnk = $request->file("datakendaraan.$key.foto_stnk");
+            $fileSim = $request->file("datakendaraan.$key.foto_sim");
+
+            $namafotoKendaraan = time() . '_kendaraan.' . $fileKendaraan->getClientOriginalExtension();
+            $fileKendaraan->move(public_path('uploads'), $namafotoKendaraan);
+
+            $namafotoStnk = time() . '_stnk.' . $fileStnk->getClientOriginalExtension();
+            $fileStnk->move(public_path('uploads'), $namafotoStnk);
+
+            $namafotoSim = time() . '_sim.' . $fileSim->getClientOriginalExtension();
+            $fileSim->move(public_path('uploads'), $namafotoSim);
+
+            $dataKendaraan = new KendaraanBukuTamu([
+                'id_surat_1' => $kendaraanData['id_surat_1'],
+                'tipe_mobil' => $kendaraanData['tipe_mobil'],
+                'warna' => $kendaraanData['warna'],
+                'nomor_polisi' => $kendaraanData['nomor_polisi'],
+                'masa_berlaku_stnk' => $kendaraanData['masa_berlaku_stnk'],
+                'foto_stnk' => $namafotoStnk,
+                // 'pengawalan' => $kendaraanData['pengawalan'],
+                'nama_supir' => $kendaraanData['nama_supir'],
+                'masa_berlaku_kir' => $kendaraanData['masa_berlaku_kir'],
+                'masa_berlaku_sim' => $kendaraanData['masa_berlaku_sim'],
+                'foto_sim' => $namafotoSim,
+                'foto_kendaraan' => $namafotoKendaraan,
+            ]);
+
+            if ($dataKendaraan->save()) {
+                $dataTersimpan++;
+            }
+        }
+        $id_surat_1 = $kendaraanData['id_surat_1']; // Ambil id_surat_1 yang sesuai dari tabel surat 1
+
+        // Membuat kode unik
+        $kode_unik = 'MCTN' . date('Ymd') . $kendaraanData['id_surat_1'];
+
+        // Membuat baris baru di tabel surat 2
+        $surat2 = new Surat2BukuTamuDuri();
+        $surat2->id_surat_1 = $id_surat_1;
+        $surat2->id_phr = null; // Misalnya null, jika diisi nanti setelah PHR approve
+        $surat2->id_ga_duri = null; // Misalnya null, jika diisi nanti
+        $surat2->id_status_surat = 1; // Misalnya 1 (Anda dapat menyesuaikan)
+        $surat2->kode_unik = $kode_unik;
+        $surat2->save();
+
+        if ($dataTersimpan > 0) {
+            return redirect()->route('tamu.create')->with('success', 'Data kendaraan berhasil disimpan.');
+        }
+
+        return redirect()->route('tamu.create')->with('error', 'Tidak ada data kendaraan yang disimpan.');
+    }
+    public function tampilKodeUnik($id)
+    {
+        // Mengambil kode unik dari tabel Surat 2 berdasarkan ID Surat 1
+
+        $kodeUnik = DB::table('surat_2_buku_tamu_duri')
+            ->where('id_surat_1', $id)
+            ->value('kode_unik');
+
+        return view('kode_unik', ['kodeUnik' => $kodeUnik]);
+    }
+
+    public function cariStatus(Request $request)
+    {
+        $request->validate([
+            'kode_unik' => 'required',
+        ]);
+
+        $kode_unik = $request->input('kode_unik');
+
+        // Cari status berdasarkan kode unik
+        // $status = Surat2BukuTamuDuri::with('statusSurat', 'tujuan')->where('kode_unik', $kode_unik)->first();
+        $status = Surat2BukuTamuDuri::with(['statusSurat', 'surat1.lokasi'])->where('kode_unik', $kode_unik)->first();
+
+        // $status = Surat2BukuTamuDuri::where('kode_unik', $kode_unik)->first();
+
+        return view('hasil_pencarian', compact('status'));
+    }
+    public function status()
+    {
+        return view('status'); // Nama view yang menampilkan form pencarian status
+    }
+
+    public function show($id_surat_2_duri)
+    {
+        $surat2 = Surat2BukuTamuDuri::with([
+            'surat1.periode',
+            'surat1.lokasi',
+            'surat1.tamu',
+            'surat1.kendaraan'
+        ])->find($id_surat_2_duri);
+
+        return view('lihat-surat', compact('surat2'));
+    }
 
 
 

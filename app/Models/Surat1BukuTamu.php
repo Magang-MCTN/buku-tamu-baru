@@ -25,6 +25,7 @@ class Surat1BukuTamu extends Model
         'tujuan_keperluan',
         'nama_pic',
         'email_pic',
+        'pengawalan',
     ];
 
     public function lokasi()
@@ -46,4 +47,20 @@ class Surat1BukuTamu extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
+    public function tamu()
+    {
+        return $this->hasMany(DataDiriBukuTamu::class, 'id_surat_1', 'id_surat_1');
+    }
+    public function kendaraan()
+    {
+        return $this->hasMany(KendaraanBukuTamu::class, 'id_surat_1', 'id_surat_1');
+    }
+    public function files()
+    {
+        return $this->hasMany(DataDiriBukuTamu::class, 'id_surat_1', 'id_surat_1');
+    }
+
+    // DataDiriBukuTamu.php
+
+
 }
