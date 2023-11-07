@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\aprovedpic;
+use App\Mail\aprovejkt;
 use App\Mail\Send;
 use App\Models\LokasiTujuan;
 use App\Models\PeriodeTamu;
@@ -73,16 +74,24 @@ class TuanRumahController extends Controller
         $surat1->id_status_surat = 2; // Misalnya, id_status_surat yang sesuai untuk status "approved"
         $surat1->alasan_surat1 = $request->input('alasan');
         $surat1->save();
+
         // Ambil alamat email tamu dari Surat 1
         $emailTamu = $surat1->email_tamu;
         $surat1_id = $id;
-        // Kirim notifikasi ke alamat email tamu
 
-        Mail::to($emailTamu)->send(new aprovedpic($surat1_id));
+        // Tambahkan kondisi untuk menentukan jenis notifikasi berdasarkan $surat1->id_lokasi
+        if ($surat1->id_lokasi == 1 || $surat1->id_lokasi == 2) {
+            // Kirim notifikasi ke alamat email tamu dengan tipe aprovedpicjkt
+            Mail::to($emailTamu)->send(new aprovejkt($surat1_id));
+        } elseif ($surat1->id_lokasi == 3) {
+            // Kirim notifikasi ke alamat email tamu dengan tipe aprovedpic
+            Mail::to($emailTamu)->send(new aprovedpic($surat1_id));
+        }
 
         // Redirect ke halaman sebelumnya atau ke halaman lain
         return redirect()->back()->with('success', 'Surat 1 telah disetujui');
     }
+
     public function reject(Request $request, $id)
     {
         // Set status surat menjadi "rejected" (sesuaikan dengan kode status yang sesuai)

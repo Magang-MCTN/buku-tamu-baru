@@ -13,9 +13,11 @@ use App\Models\Surat1BukuTamu;
 use App\Models\Surat2BukuTamu;
 use App\Models\Surat2BukuTamuDuri;
 use App\Models\User;
+use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+// use Barryvdh\DomPDF\Facades as PDF;
 
 class TamuController extends Controller
 {
@@ -101,6 +103,11 @@ class TamuController extends Controller
         $surat1_id = $request->input('surat1_id');
         return view('pengajuan2', compact('surat1_id'));
     }
+    public function surat2jkt(Request $request)
+    {
+        $surat1_id = $request->input('surat1_id');
+        return view('pengajuanjkt', compact('surat1_id'));
+    }
     public function datatamu(Request $request)
     {
         $this->validate($request, [
@@ -113,7 +120,8 @@ class TamuController extends Controller
 
         if ($request->hasFile('foto_ktp')) {
             $fotoKtp = $request->file('foto_ktp');
-            $namaFotoKtp = time() . '.' . $fotoKtp->getClientOriginalExtension();
+            $namaTamu = $request->nama_tamu; // Ambil nama tamu dari form
+            $namaFotoKtp = $namaTamu . '_' . time() . '.' . $fotoKtp->getClientOriginalExtension();
             $fotoKtp->move(public_path('uploads'), $namaFotoKtp);
         }
 
@@ -171,9 +179,71 @@ class TamuController extends Controller
 
         return redirect()->route('pilih.kendaraan');
     }
+    public function simpanTamukantor(Request $request)
+    {
+        // Ambil data tamu dari permintaan
+        $request->validate([
+            'dataTamu' => 'required|array',
+            'dataTamu.*.nama_tamu' => 'required|string',
+            'dataTamu.*.nik_tamu' => 'required|string',
+            'dataTamu.*.masa_berlaku_ktp' => 'required|string',
+            'dataTamu.*.jabatan' => 'required|string',
+            'dataTamu.*.foto_ktp' => 'required|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'dataTamu.*.id_surat_1' =>  'required|string',
+        ]);
+
+        $dataTersimpan = 0;
+
+        foreach ($request->input('dataTamu', []) as $key => $tamuData) {
+            $file = $request->file("dataTamu.$key.foto_ktp");
+            $namaFotoKtp = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $namaFotoKtp);
+
+            $tamuBaru = new DataDiriBukuTamu([
+                'nama_tamu' => $tamuData['nama_tamu'],
+                'nik_tamu' => $tamuData['nik_tamu'],
+                'masa_berlaku_ktp' => $tamuData['masa_berlaku_ktp'],
+                'jabatan' => $tamuData['jabatan'],
+                'foto_ktp' => $namaFotoKtp,
+                'id_surat_1' => $tamuData['id_surat_1'],
+            ]);
+
+            // Simpan data tamu ke dalam database
+            if ($tamuBaru->save()) {
+                $dataTersimpan++;
+            }
+            try {
+                $surat1_id = $tamuData['id_surat_1'];
+
+                // Ambil id_surat_1 yang sesuai dari tabel surat 1
+
+                // Membuat kode unik
+                $kode_unik = 'MCTN' . date('Ymd') . $surat1_id;
+
+                // Membuat baris baru di tabel surat 2
+                $surat2 = new Surat2BukuTamu();
+                $surat2->id_surat_1 = $surat1_id;
+                // Misalnya null, jika diisi nanti setelah PHR approve
+                $surat2->id_ga = null; // Misalnya null, jika diisi nanti
+                $surat2->id_status_surat = 6; // Misalnya 1 (Anda dapat menyesuaikan)
+                $surat2->kode_unik = $kode_unik;
+                $surat2->save();
+
+                // $redirectUrl = '/kode-unik/' . $surat1_id;
+                // return redirect('/kode-unik/'+{$surat1_id});
+                return redirect('/kode-unik/' . $surat1_id);
+            } catch (Exception $e) {
+                return response()->json(['error' => $e->getMessage()], 500); // Mengirim pesan kesalahan sebagai respons JSON
+            }
+        }
+
+
+        return redirect()->route('pilih.kendaraan');
+    }
 
     public function pilihKendaraan(Request $request)
     {
+
         $surat1_id = $request->input('surat1_id');
 
         return view('pilih-kendaraan', compact('surat1_id'));
@@ -183,28 +253,49 @@ class TamuController extends Controller
         $surat1_id = $request->input('surat1_id');
         $pengawalan = $request->input('pengawalan');
 
-        try {
-            $surat1 = Surat1BukuTamu::find($surat1_id);
+        // Validasi: Periksa apakah objek $surat1 ditemukan
+        $surat1 = Surat1BukuTamu::where('id_surat_1', $surat1_id)->first();
 
-            if ($surat1) {
-                $surat1->update(['pengawalan' => $pengawalan]);
-                // Atau Anda dapat menggunakan $surat1->pengawalan = $pengawalan; $surat1->save();
-            } else {
-                // Lakukan penanganan kesalahan jika $surat1 tidak ditemukan
-            }
 
-            return redirect()->route('surat1.show', ['id' => $surat1_id])
-                ->with('success', 'Pengawalan berhasil disimpan.');
-        } catch (\Exception $e) {
-            // Tangani kesalahan jika terjadi eksepsi (exception)
-            return redirect()->route('surat1.show', ['id' => $surat1_id])
-                ->with('error', 'Terjadi kesalahan saat menyimpan pengawalan.');
-        }
+
+        // Lakukan penyimpanan data ke database
+        $surat1->pengawalan = $pengawalan;
+        $surat1->save();
+
+        // Respond dengan pesan sukses
+        return redirect('/kendaraan?surat1_id=' . $surat1_id);
     }
+
     public function kendaraan(Request $request)
     {
         $surat1_id = $request->input('surat1_id');
         return view('kendaraan', compact('surat1_id'));
+    }
+    public function dijemput(Request $request)
+    {
+        try {
+            $surat1_id = $request->input('surat1_id');
+
+            // Ambil id_surat_1 yang sesuai dari tabel surat 1
+
+            // Membuat kode unik
+            $kode_unik = 'MCTN' . date('Ymd') . $surat1_id;
+
+            // Membuat baris baru di tabel surat 2
+            $surat2 = new Surat2BukuTamuDuri();
+            $surat2->id_surat_1 = $surat1_id;
+            $surat2->id_phr = null; // Misalnya null, jika diisi nanti setelah PHR approve
+            $surat2->id_ga_duri = null; // Misalnya null, jika diisi nanti
+            $surat2->id_status_surat = 1; // Misalnya 1 (Anda dapat menyesuaikan)
+            $surat2->kode_unik = $kode_unik;
+            $surat2->save();
+
+            // $redirectUrl = '/kode-unik/' . $surat1_id;
+            // return redirect('/kode-unik/'+{$surat1_id});
+            return redirect('/kode-unik/' . $surat1_id);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500); // Mengirim pesan kesalahan sebagai respons JSON
+        }
     }
 
 
@@ -329,7 +420,19 @@ class TamuController extends Controller
         return view('lihat-surat', compact('surat2'));
     }
 
+    public function cetakSurat(Request $request, $id_surat_2_duri)
+    {
+        $surat2 = Surat2BukuTamuDuri::find($id_surat_2_duri);
 
+        if ($surat2) {
+            $pdf = PDF::loadview('cetak-surat', compact('surat2'));
+
+
+            return $pdf->stream('surat.pdf'); // Menampilkan PDF dalam browser
+        } else {
+            return abort(404); // Atau tindakan lain jika data tidak ditemukan
+        }
+    }
 
     public function upsurat2(Request $request, $id)
     {

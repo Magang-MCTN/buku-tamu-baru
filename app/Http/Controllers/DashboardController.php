@@ -31,7 +31,7 @@ class DashboardController extends Controller
                 return redirect()->route('admin_duri.dashboard');
                 break;
             case 6:
-                return redirect()->route('tuan.dashboard');
+                return redirect()->route('security.home');
                 break;
             case 7:
                 return redirect()->route('tuan.dashboard');

@@ -9,7 +9,19 @@ class Surat2BukuTamu extends Model
 {
     use HasFactory;
     protected $table = 'surat_2_buku_tamu';
+    protected $primaryKey = 'id_surat_2';
+    protected $fillable = [
+        'id_surat_1',
+        'id_kendaraan',
+        'id_tamu',
 
+        'id_ga',
+        'id_status_surat',
+        'id_lokasi',
+        'id_periode',
+        'kode_unik',
+        'alasan_sura2'
+    ];
     public function surat1()
     {
         return $this->belongsTo(Surat1BukuTamu::class, 'id_surat_1', 'id_surat_1');

@@ -7,16 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class Send extends Mailable
+class aprovejkt extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public $idsurat1;
-
-    public function __construct($idsurat1)
+    public $surat1_id;
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct($surat1_id)
     {
-        $this->$idsurat1 = $idsurat1;
+        $this->surat1_id = $surat1_id;
     }
+
     /**
      * Build the message.
      *
@@ -24,6 +28,6 @@ class Send extends Mailable
      */
     public function build()
     {
-        return $this->view('email');
+        return $this->view('approvedpicjkt');
     }
 }

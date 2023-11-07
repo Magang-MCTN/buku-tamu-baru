@@ -165,7 +165,7 @@
 
                 // Kirim data ke server menggunakan AJAX
                 $.ajax({
-                    url: "/simpanTamu",
+                    url: "/simpanTamukantor",
                     type: "POST",
                     data: formData,
                     contentType: false,
@@ -176,7 +176,7 @@
                         $('#tabelSementara').empty();
                         alert('Data tamu berhasil disimpan ke database.');
 
-                        window.location.href = "/pilih-kendaraan?surat1_id=" + {{ $surat1_id }};
+                        window.location.href = '/kode-unik/{{ $surat1_id }}';
                     },
                     error: function (xhr, status, error) {
                         alert('Terjadi kesalahan saat menyimpan data.');

@@ -178,7 +178,7 @@
           @if (Auth::user()->level === 'Administrator')
           <a class="nav-link" href="/admin/users">
           @else
-          <a class="nav-link" href="/">
+          <a class="nav-link" href="/mctn">
           @endif
             <i class="mdi mdi-grid-large menu-icon"></i>
             <span class="menu-title">Dashboard</span>

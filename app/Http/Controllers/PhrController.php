@@ -21,7 +21,12 @@ class PhrController extends Controller
     }
     public function show($id_surat_duri)
     {
-        $surat2 = Surat2BukuTamuDuri::with(['surat1', 'statusSurat'])->find($id_surat_duri);
+        $surat2 = Surat2BukuTamuDuri::with([
+            'surat1.periode',
+            'surat1.lokasi',
+            'surat1.tamu',
+            'surat1.kendaraan'
+        ])->find($id_surat_duri);
 
         return view('dashboard.phr.show', compact('surat2'));
     }

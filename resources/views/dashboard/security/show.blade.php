@@ -88,68 +88,6 @@
         </tbody>
     </table>
 
-    <div class="d-flex my-4">
-        @if($surat2->id_status_surat === 1)
-            <button id="btn-approve" class="btn btn-success mx-2">Setujui</button>
-        @endif
 
-        @if($surat2->id_status_surat === 1)
-            <button id="btn-reject" class="btn btn-danger mx-2">Tolak</button>
-        @endif
-    </div>
-
-    <div id="alasan-form" style="display: none;">
-        <form action="{{ route('phr.approve', $surat2->id_surat_2_duri) }}" method="POST">
-            @csrf
-            <div class="form-group my-3">
-                <label for="alasan_surat_2">Alasan Setuju:</label>
-                <textarea name="alasan_surat2" id="alasan_surat2" cols="40" rows="5" class="form-control" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-success">Setujui</button>
-        </form>
-    </div>
-
-    <div id="alasan-tolak-form" style="display: none;">
-        <form action="{{ route('phr.reject', $surat2->id_surat_2_duri) }}" method="POST">
-            @csrf
-            <div class="form-group my-3">
-                <label for="alasan_surat2">Alasan Tolak:</label>
-                <textarea name="alasan_surat2" id="alasan_surat2" cols="40" rows="5" class="form-control" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-danger">Tolak</button>
-        </form>
-    </div>
-
-    <a href="#" class="btn btn-primary my-4">Kembali</a>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnApprove = document.getElementById('btn-approve');
-        const btnReject = document.getElementById('btn-reject');
-        const alasanForm = document.getElementById('alasan-form');
-        const alasanTolakForm = document.getElementById('alasan-tolak-form');
-
-        btnApprove.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (alasanForm.style.display === 'block') {
-                alasanForm.style.display = 'none';
-            } else {
-                alasanForm.style.display = 'block';
-                alasanTolakForm.style.display = 'none';
-            }
-        });
-
-        btnReject.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (alasanTolakForm.style.display === 'block') {
-                alasanTolakForm.style.display = 'none';
-            } else {
-                alasanTolakForm.style.display = 'block';
-                alasanForm.style.display = 'none';
-            }
-        });
-    });
-</script>
 
 @endsection
