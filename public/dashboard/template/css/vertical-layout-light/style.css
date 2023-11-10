@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------
  [Master Stylesheet]
 
-  Project:	Star Admin2 
+  Project:	Star Admin2
   Version:	1.2.1
 -------------------------------------------------------------------*/
 /*-------------------------------------------------------------------
@@ -29392,7 +29392,7 @@ div.tagsinput span.tag a {
 }
 
 .navbar .navbar-menu-wrapper {
-  background: #F4F5F7;
+  background: #097B96;
   transition: width 0.25s ease;
   -webkit-transition: width 0.25s ease;
   -moz-transition: width 0.25s ease;
@@ -29701,7 +29701,7 @@ div.tagsinput span.tag a {
   font-weight: normal;
   font-size: 28px;
   line-height: 38px;
-  color: #8D8D8D;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
@@ -29715,13 +29715,13 @@ div.tagsinput span.tag a {
   font-weight: normal;
   font-size: 16px;
   line-height: 22px;
-  color: #8D8D8D;
+  color: #ffffff;
   margin-bottom: 0;
 }
 
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item .dropdown-bordered {
   padding: 8px 15px;
-  border: 1px solid #DFDFDF;
+  border: 1px solid #ffffff;
   border-radius: 6px;
   font-style: normal;
   font-weight: 500;

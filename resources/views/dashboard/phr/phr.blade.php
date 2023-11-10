@@ -13,7 +13,7 @@
 
                 <!-- Earnings (Monthly) Card Example -->
                 <div class="col">
-                  <a href="status-pengadaan" class="text-decoration-none">
+                  <a href="/statuspengadaan" class="text-decoration-none">
                     <div class="card mb-2">
                         <div class="card-body d-flex align-self-center">
                             <div class="row no-gutters align-items-center">
@@ -60,7 +60,7 @@
                           <div class="row no-gutters align-items-center">
                               <div class="col">
                                   <div class="fw-bold text-black">
-                                      Kunjungan disetujui</div>
+                                      Kunjungan <br> Disetujui</div>
                                   <div class="card-title" style="font-size: 24px">50</div>
                               </div>
                               <div class="col-auto">
@@ -80,7 +80,7 @@
                           <div class="row no-gutters align-items-center">
                               <div class="col">
                                   <div class="fw-bold text-black">
-                                      kunjungan ditolak</div>
+                                      Kunjungan <br> Ditolak</div>
                                   <div class="card-title" style="font-size: 24px">78</div>
                               </div>
                               <div class="col-auto">
@@ -93,7 +93,8 @@
                 </div>
 
                 <div class="container">
-                    <h1>Data Surat 2</h1>
+                    <div class="card mt-4">
+                        <div class="card-body">
                     <table class="table">
                         <thead>
                             <tr>
@@ -110,10 +111,10 @@
 
                                     <td>{{ $data->surat1->nama_tamu }}</td>
                                     <td>{{ $data->surat1->asal_perusahaan }}</td>
-                                    <td>{{ $data->surat1->periode->tanggal_masuk->format('d-m-Y') }} - {{ $data->surat1->periode->tanggal_keluar->format('d-m-Y') }}</td>
+                                    <td>{{ $data->surat1->periode->tanggal_masuk->format('d-m-Y') }} s.d. {{ $data->surat1->periode->tanggal_keluar->format('d-m-Y') }}</td>
                                     <td>{{ $data->statusSurat->nama_status_surat }}</td>
                                     <td>
-                                        <a href="{{ route('phr.surat2.show', ['id_surat_2_duri' => $data->id_surat_2_duri]) }}" class="btn btn-info">Lihat</a>
+                                        <a href="{{ route('phr.surat2.show', ['id_surat_2_duri' => $data->id_surat_2_duri]) }}" class="btn" style="background-color: #097B96; color:white">Lihat</a>
                                     </td>
                                 </tr>
                             @endforeach

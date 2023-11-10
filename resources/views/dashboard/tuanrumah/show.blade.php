@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="container">
-    <h1>Detail Surat 1 Buku Tamu</h1>
+    <h2 class=fw-bold>Detail Surat</h2>
     <p>ID: {{ $surat1->id_surat_1 }}</p>
     <p>Nama Tamu: {{ $surat1->nama_tamu}}</p>
     <p>Email Tamu: {{ $surat1->email_tamu }}</p>
     <p>No HP Tamu: {{ $surat1->no_hp_tamu }}</p>
     <p>Asal Perusahaan: {{ $surat1->asal_perusahaan }}</p>
-    <p>Periode: {{ $surat1->periode->tanggal_masuk->format('d-m-Y') }} - {{ $surat1->periode->tanggal_keluar->format('d-m-Y') }}</p>
+    <p>Periode: {{ $surat1->periode->tanggal_masuk->format('d-m-Y') }} s.d. {{ $surat1->periode->tanggal_keluar->format('d-m-Y') }}</p>
     <p>Jam Kedatangan: {{ $surat1->periode->jam_kedatangan }} </p>
     <p>Keperluan: {{ $surat1->tujuan_keperluan }}</p>
     <p>Daerah Kunjungan: {{ $surat1->lokasi->nama_lokasi }}</p>

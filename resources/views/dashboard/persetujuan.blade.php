@@ -1,124 +1,72 @@
 @extends('dashboard/app')
 
 @section('content')
- <!-- partial -->
+<!-- partial -->
 <link rel="stylesheet" href="{{ asset('dashboard\template\css\cards.css') }}">
-    <!-- partial -->
-    <div class="main-panel">
-      <div class="content-wrapper">
+<!-- partial -->
+<div class="main-panel">
+    <div class="content-wrapper">
         <div class="row">
-          <div class="col-sm-12">
-            <div class="home-tab">
-              <div class="row">
+            <div class="col-sm-12">
+                <div class="home-tab">
+                    <div class="row">
 
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col">
-                  <a href="status-pengadaan" class="text-decoration-none">
-                    <div class="card mb-2">
-                        <div class="card-body d-flex align-self-center">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col">
-                                    <div class="fw-bold text-black">
-                                        Total  <br> Kunjungan
+                        <div class="d-flex justify-content-between">
+                            <h2 class="fw-bold mt-3">Menunggu <br> Persetujuan</h2>
+                            <div class="row form-group">
+                                <div class="col me-2" style="align-items: center;">
+                                    <form method="post" action="{{ route('dashboard.persetujuan.cari') }}">
+                                        @csrf
+                                    <label class="" for="search" >Cari Nama Tamu</label>
+                                    <div class="d-flex" style="align-items: center">
+                                        <input type="text" class="form-control me-1 mb-4" id="search">
+                                        <button class="btn btn-info mb-4" type="submit" style="color: white">Cari</button>
                                     </div>
-                                    <div class="card-title" style="font-size: 24px">10</div>
+
+
                                 </div>
-                                <div class="col-auto">
-                                    <i class="mdi mdi-archive" style="color: #097b96"></i>
-                                </div>
+                                {{-- <div class="col form-group">
+                                    <label for="status_surat" class="form-label">Filter Berdasarkan Status</label>
+                                    <select id="status_surat" class="form-select form-control" name="status_surat">
+                                        <option value="" selected disabled> Status </option>
+                                        <option value="2">Disetujui</option>
+                                        <option value="3">Ditolak</option>
+                                    </select>
+                                </div> --}}
                             </div>
                         </div>
-                    </div>
-                  </a>
-              </div>
 
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col">
-                  <a href="/pengadaan?status=diajukan" class="text-decoration-none">
-                    <div class="card mb-2">
-                      <div class="card-body d-flex align-self-center">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col">
-                                    <div class="fw-bold text-black">
-                                        Pengajuan <br> Kunjungan</div>
-                                    <div class="card-title" style="font-size: 24px">45</div>
+                        <div class="container">
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Tamu</th>
+                                                <th>Asal Perusahaan</th>
+                                                <th>Periode</th>
+
+                                                <th>Status Surat</th>
+                                                <th>Aksi</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($surat1 as $data)
+                                            <tr>
+                                                <td>{{ $data->nama_tamu }}</td>
+                                                <td>{{ $data->asal_perusahaan }}</td>
+                                                <td>{{ $data->periode->tanggal_masuk->format('d-m-Y') }} s.d. {{ $data->periode->tanggal_keluar->format('d-m-Y') }}</td>
+                                                <td>{{ $data->statusSurat->nama_status_surat }}</td>
+                                                <td><a href="{{ route('tuanrumah.show', $data->id_surat_1) }}" class="btn" style="background-color: #097B96; color:white">Lihat</a>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="col-auto">
-                                  <i class="mdi mdi-file-document" style="color: #097b96"></i>
-                              </div>
                             </div>
+
                         </div>
-                    </div>
-                  </a>
-                </div>
-
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col">
-                  <a href="/pengadaan?status=disetujui_admin_general" class="text-decoration-none">
-                    <div class="card mb-2">
-                      <div class="card-body d-flex align-self-center">
-                          <div class="row no-gutters align-items-center">
-                              <div class="col">
-                                  <div class="fw-bold text-black">
-                                      Kunjungan disetujui</div>
-                                  <div class="card-title" style="font-size: 24px">50</div>
-                              </div>
-                              <div class="col-auto">
-                                <i class="mdi mdi-file-check" style="color: #097b96"></i>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-
-                <!-- Earnings (Monthly) Card Example -->
-                <div class="col">
-                  <a href="/pengadaan?status=disetujui_admin_general" class="text-decoration-none">
-                    <div class="card mb-2">
-                      <div class="card-body d-flex align-self-center">
-                          <div class="row no-gutters align-items-center">
-                              <div class="col">
-                                  <div class="fw-bold text-black">
-                                      kunjungan ditolak</div>
-                                  <div class="card-title" style="font-size: 24px">78</div>
-                              </div>
-                              <div class="col-auto">
-                                <i class="mdi mdi-file-check" style="color: #097b96"></i>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-
-                <div class="container">
-                    <h1>Data Surat 1</h1>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nama Tamu</th>
-                                <th>Asal Perusahaan</th>
-                                <th>Periode</th>
-
-                                <th>Status Surat</th>
-                                <th>Aksi</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($surat1 as $data)
-                                <tr>
-                                    <td>{{ $data->nama_tamu }}</td>
-                                    <td>{{ $data->asal_perusahaan }}</td>
-                                    <td>{{ $data->periode->tanggal_masuk->format('d-m-Y') }} - {{ $data->periode->tanggal_keluar->format('d-m-Y') }}</td>
-                                    <td>{{ $data->statusSurat->nama_status_surat }}</td>
-                                    <td><a href="{{ route('tuanrumah.show', $data->id_surat_1) }}" class="btn btn-info">Lihat</a>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
 
                     </div>
                     {{-- <div class="col-lg-4 d-flex flex-column">
@@ -135,7 +83,7 @@
                           </div>
                         </div>
                       </div> --}}
-                      {{-- <div class="row flex-grow">
+                    {{-- <div class="row flex-grow">
                         <div class="col-12 grid-margin stretch-card">
                           <div class="card card-rounded">
                             <div class="card-body">
@@ -311,13 +259,12 @@
                           </div>
                         </div>
                       </div> --}}
-                    </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-      @endsection
-
+    </div>
+</div>
+</div>
+</div>
+</div>
+@endsection
