@@ -59,18 +59,18 @@ class AdminUserController extends Controller
         return view('dashboard.user.edit', compact('user', 'roles'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_user)
     {
         // Validasi input pengguna
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id_user,
             'password' => 'nullable|min:6',
             'role' => 'required',
         ]);
 
         // Simpan perubahan pada pengguna
-        $user = User::find($id);
+        $user = User::find($id_user);
         $user->name = $request->get('name');
         $user->email = $request->get('email');
         if ($request->has('password')) {
@@ -90,11 +90,13 @@ class AdminUserController extends Controller
 
     public function destroy($id)
     {
-        // Hapus pengguna dari database
         $user = User::find($id);
-        $user->roles()->sync([]); // Hapus relasi peran terlebih dahulu
-        $user->delete();
 
-        return redirect('/admin/users')->with('success', 'Pengguna telah dihapus.');
+        if ($user) {
+            $user->delete();
+            return redirect('/admin/users')->with('success', 'Pengguna telah dihapus.');
+        } else {
+            return redirect('/admin/users')->with('error', 'Pengguna tidak ditemukan.');
+        }
     }
 }
